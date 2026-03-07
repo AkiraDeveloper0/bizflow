@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 import {
   Task, Project, Empresa, TaskStatus, ViewMode, Priority, Area,
   Nota, EmpresaLogin, Ideia, FaturamentoEntry, EmpresaExtra,
+  CalendarioEvent,
 } from "@/types";
 import { TASKS, PROJECTS, EMPRESAS, DEFAULT_EMPRESAS_DATA } from "./mockData";
 
@@ -19,6 +20,7 @@ interface AppState {
   projects: Project[];
   empresas: Empresa[];
   empresasData: Record<string, EmpresaExtra>;
+  calendarioEvents: CalendarioEvent[];
 
   // UI State
   activePage: string;
@@ -27,6 +29,10 @@ interface AppState {
   viewMode: ViewMode;
   sidebarCollapsed: boolean;
   taskFilters: TaskFilters;
+
+  // Notification tracking — stores IDs of notifications already shown
+  // Format: "${eventId}-approaching" or "${eventId}-now"
+  shownEventNotifications: string[];
 
   // Actions — Navigation
   setActivePage: (page: string) => void;
@@ -58,6 +64,11 @@ interface AppState {
   removeIdeia: (empresaId: string, ideiaId: string) => void;
   addFaturamento: (empresaId: string, entry: FaturamentoEntry) => void;
   removeFaturamento: (empresaId: string, entryId: string) => void;
+
+  // Actions — Calendário Events
+  addCalendarioEvent: (event: CalendarioEvent) => void;
+  removeCalendarioEvent: (id: string) => void;
+  markEventNotificationShown: (notifId: string) => void;
 }
 
 const DEFAULT_FILTERS: TaskFilters = { priorities: [], categories: [] };
@@ -75,6 +86,7 @@ export const useAppStore = create<AppState>()(
       projects: PROJECTS,
       empresas: EMPRESAS,
       empresasData: DEFAULT_EMPRESAS_DATA,
+      calendarioEvents: [],
 
       activePage: "projetos",
       activeProjectId: "p1",
@@ -82,6 +94,7 @@ export const useAppStore = create<AppState>()(
       viewMode: "kanban",
       sidebarCollapsed: false,
       taskFilters: DEFAULT_FILTERS,
+      shownEventNotifications: [],
 
       setActivePage: (page) => set({ activePage: page }),
       setActiveProject: (projectId) => set({ activeProjectId: projectId }),
@@ -233,6 +246,17 @@ export const useAppStore = create<AppState>()(
             },
           };
         }),
+
+      addCalendarioEvent: (event) =>
+        set((state) => ({ calendarioEvents: [...state.calendarioEvents, event] })),
+
+      removeCalendarioEvent: (id) =>
+        set((state) => ({ calendarioEvents: state.calendarioEvents.filter((e) => e.id !== id) })),
+
+      markEventNotificationShown: (notifId) =>
+        set((state) => ({
+          shownEventNotifications: [...state.shownEventNotifications, notifId],
+        })),
     }),
     {
       name: "bizflow-storage",
@@ -246,6 +270,8 @@ export const useAppStore = create<AppState>()(
         taskFilters: state.taskFilters,
         empresas: state.empresas,
         empresasData: state.empresasData,
+        calendarioEvents: state.calendarioEvents,
+        shownEventNotifications: state.shownEventNotifications,
       }),
     }
   )

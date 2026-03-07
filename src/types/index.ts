@@ -124,3 +124,15 @@ export interface EmpresaExtra {
   ideias: Ideia[];
   faturamento: FaturamentoEntry[];
 }
+
+// ─── Calendário Event Types ───────────────────────────────────────────────────
+
+export interface CalendarioEvent {
+  id: string;
+  title: string;
+  date: string;       // "YYYY-MM-DD"
+  time: string;       // "HH:MM"
+  description: string;
+  color: string;
+  reminderMinutes: number; // notify X minutes before (0 = no reminder before)
+}
