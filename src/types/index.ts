@@ -76,3 +76,51 @@ export interface NavPage {
   href: string;
   icon: string;
 }
+
+// ─── Empresa Detail Types ─────────────────────────────────────────────────
+
+export interface Nota {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  color: string;
+}
+
+export interface EmpresaLogin {
+  id: string;
+  service: string;
+  username: string;
+  password: string;
+  url: string;
+}
+
+export type IdeiaStatus = "nova" | "em_avaliacao" | "aprovada" | "descartada";
+
+export interface Ideia {
+  id: string;
+  title: string;
+  description: string;
+  votes: number;
+  createdAt: string;
+  status: IdeiaStatus;
+}
+
+export interface FaturamentoEntry {
+  id: string;
+  month: string; // "YYYY-MM"
+  receita: number;
+  despesas: number;
+  descricao: string;
+}
+
+export interface EmpresaExtra {
+  website: string;
+  cnpj: string;
+  telefone: string;
+  endereco: string;
+  notas: Nota[];
+  logins: EmpresaLogin[];
+  ideias: Ideia[];
+  faturamento: FaturamentoEntry[];
+}

@@ -13,12 +13,14 @@ import {
   FolderOpen,
   SlidersHorizontal,
   ChevronDown,
+  // GitBranch kept for VIEW_TABS icon
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useAppStore } from "@/lib/store";
 import { ViewMode } from "@/types";
 import { cn } from "@/lib/utils";
 import { ListView } from "./ListView";
+import { TimelineView } from "./TimelineView";
 import { NovaTaskModal } from "@/components/modals/NovaTaskModal";
 import { FiltrosPanel } from "@/components/panels/FiltrosPanel";
 
@@ -229,7 +231,7 @@ export function ProjetosPage() {
         <div className="h-full px-6 pt-5 overflow-auto">
           {viewMode === "kanban" && <KanbanBoard />}
           {viewMode === "list" && <ListView />}
-          {viewMode === "timeline" && <TimelinePlaceholder />}
+          {viewMode === "timeline" && <TimelineView />}
           {viewMode === "board" && <BoardPlaceholder />}
         </div>
 
@@ -248,27 +250,6 @@ export function ProjetosPage() {
   );
 }
 
-function TimelinePlaceholder() {
-  return (
-    <div className="flex flex-col items-center justify-center h-64 gap-3">
-      <div
-        className="w-14 h-14 rounded-[14px] flex items-center justify-center"
-        style={{
-          background: "rgba(67,97,238,0.08)",
-          border: "1px solid rgba(67,97,238,0.15)",
-        }}
-      >
-        <GitBranch size={24} color="#4361EE" />
-      </div>
-      <p className="text-[13.5px] font-semibold text-[#3A3A48]">
-        Timeline em breve
-      </p>
-      <p className="text-[12px] text-[#2A2A36]">
-        Esta visualização está sendo desenvolvida
-      </p>
-    </div>
-  );
-}
 
 function BoardPlaceholder() {
   return (

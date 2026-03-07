@@ -13,11 +13,12 @@ const STATUS_LABELS = {
   em_formacao: { label: "Em formação", color: "#F97316", bg: "rgba(249,115,22,0.12)" },
 };
 
-function EmpresaCard({ empresa, delay }: { empresa: Empresa; delay: number }) {
+function EmpresaCard({ empresa, delay, onClick }: { empresa: Empresa; delay: number; onClick: () => void }) {
   const statusConfig = STATUS_LABELS[empresa.status];
 
   return (
     <motion.div
+      onClick={onClick}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.25 }}
@@ -92,7 +93,7 @@ function EmpresaCard({ empresa, delay }: { empresa: Empresa; delay: number }) {
 }
 
 export function EmpresasPage() {
-  const { empresas } = useAppStore();
+  const { empresas, setActiveEmpresaId, setActivePage } = useAppStore();
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -146,7 +147,12 @@ export function EmpresasPage() {
       {/* Grid */}
       <div className="grid grid-cols-2 gap-4">
         {empresas.map((empresa, i) => (
-          <EmpresaCard key={empresa.id} empresa={empresa} delay={i * 0.07} />
+          <EmpresaCard
+            key={empresa.id}
+            empresa={empresa}
+            delay={i * 0.07}
+            onClick={() => { setActiveEmpresaId(empresa.id); setActivePage("empresa-detail"); }}
+          />
         ))}
       </div>
 

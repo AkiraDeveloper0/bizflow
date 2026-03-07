@@ -1,4 +1,79 @@
-import { Member, Task, Project, Empresa } from "@/types";
+import { Member, Task, Project, Empresa, EmpresaExtra } from "@/types";
+
+export const DEFAULT_EMPRESAS_DATA: Record<string, EmpresaExtra> = {
+  e1: {
+    website: "https://techventures.com.br",
+    cnpj: "12.345.678/0001-90",
+    telefone: "(11) 9 9999-8888",
+    endereco: "Av. Paulista, 1000 - São Paulo, SP",
+    notas: [
+      { id: "n1", title: "Reunião Q1 2025", content: "Discutir metas e KPIs do primeiro trimestre. Foco em crescimento da base de clientes e redução do churn.", createdAt: "2025-01-15", color: "#4361EE" },
+      { id: "n2", title: "Roadmap do produto", content: "Prioridades: autenticação OAuth, dashboard de analytics, integração com CRM externo.", createdAt: "2025-02-01", color: "#7C3AED" },
+      { id: "n3", title: "Contato investidor", content: "Reunião agendada com fundo de investimento Série A. Preparar deck atualizado.", createdAt: "2025-02-20", color: "#059669" },
+    ],
+    logins: [
+      { id: "l1", service: "AWS Console", username: "admin@techventures.com.br", password: "TV@2025#AWS!", url: "https://console.aws.amazon.com" },
+      { id: "l2", service: "GitHub", username: "techventures-org", password: "ghp_xxxxxxxxxxxx", url: "https://github.com/techventures" },
+      { id: "l3", service: "Vercel", username: "deploy@techventures.com.br", password: "Vrc!2025@deploy", url: "https://vercel.com/techventures" },
+    ],
+    ideias: [
+      { id: "i1", title: "App mobile nativo", description: "Desenvolver versão mobile do painel financeiro para iOS e Android", votes: 5, createdAt: "2025-01-20", status: "em_avaliacao" },
+      { id: "i2", title: "Parceria com FinanceFlow", description: "Explorar sinergia entre os produtos das duas empresas do grupo", votes: 3, createdAt: "2025-02-10", status: "nova" },
+      { id: "i3", title: "White-label para bancos", description: "Adaptar a plataforma para ser vendida como white-label para bancos regionais", votes: 7, createdAt: "2025-02-25", status: "aprovada" },
+    ],
+    faturamento: [
+      { id: "f1", month: "2025-01", receita: 45000, despesas: 28000, descricao: "Janeiro — Início do trimestre" },
+      { id: "f2", month: "2025-02", receita: 52000, despesas: 31000, descricao: "Fevereiro — Novos clientes" },
+      { id: "f3", month: "2025-03", receita: 58000, despesas: 33000, descricao: "Março — Crescimento acelerado" },
+    ],
+  },
+  e2: {
+    website: "https://brandstudio.design",
+    cnpj: "98.765.432/0001-10",
+    telefone: "(11) 3 3333-4444",
+    endereco: "Rua Oscar Freire, 500 - São Paulo, SP",
+    notas: [
+      { id: "n1", title: "Briefing Rebranding", content: "Cliente solicitou atualização completa da identidade visual. Prazo: final de março.", createdAt: "2025-01-10", color: "#DB2777" },
+    ],
+    logins: [
+      { id: "l1", service: "Figma Teams", username: "team@brandstudio.design", password: "Fg!BrandS2025", url: "https://figma.com" },
+    ],
+    ideias: [
+      { id: "i1", title: "Portfólio interativo 3D", description: "Site com apresentação 3D dos projetos de branding", votes: 4, createdAt: "2025-01-15", status: "em_avaliacao" },
+    ],
+    faturamento: [
+      { id: "f1", month: "2025-01", receita: 32000, despesas: 18000, descricao: "Janeiro" },
+      { id: "f2", month: "2025-02", receita: 38000, despesas: 21000, descricao: "Fevereiro" },
+    ],
+  },
+  e3: {
+    website: "https://financeflow.com.br",
+    cnpj: "11.222.333/0001-44",
+    telefone: "(21) 2 2222-3333",
+    endereco: "Av. Rio Branco, 200 - Rio de Janeiro, RJ",
+    notas: [],
+    logins: [],
+    ideias: [],
+    faturamento: [
+      { id: "f1", month: "2025-01", receita: 120000, despesas: 75000, descricao: "Janeiro — Gestão de carteiras" },
+      { id: "f2", month: "2025-02", receita: 135000, despesas: 82000, descricao: "Fevereiro" },
+    ],
+  },
+  e4: {
+    website: "",
+    cnpj: "",
+    telefone: "(11) 9 8888-7777",
+    endereco: "Av. Engenheiro Luís Carlos Berrini, 300 - SP",
+    notas: [
+      { id: "n1", title: "Fase de formação", content: "Empresa ainda em processo de abertura. CNPJ em análise na Receita Federal.", createdAt: "2025-02-01", color: "#D97706" },
+    ],
+    logins: [],
+    ideias: [
+      { id: "i1", title: "Plataforma de aluguel inteligente", description: "IA para sugerir imóveis com base no perfil do usuário", votes: 8, createdAt: "2025-02-05", status: "aprovada" },
+    ],
+    faturamento: [],
+  },
+};
 
 export const MEMBERS: Member[] = [
   { id: "m1", name: "Rafael Costa", avatar: "", color: "#4361EE", initials: "RC" },

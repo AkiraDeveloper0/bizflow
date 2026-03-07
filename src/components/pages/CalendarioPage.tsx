@@ -1,0 +1,326 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { useAppStore } from "@/lib/store";
+import { getPriorityConfig } from "@/lib/utils";
+import { Task } from "@/types";
+
+const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+const MONTH_NAMES = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+
+const STATUS_COLORS: Record<string, string> = {
+  todo: "#3E3E58",
+  in_progress: "#4361EE",
+  review: "#F97316",
+  done: "#22C55E",
+};
+
+function TaskPill({ task }: { task: Task }) {
+  const color = STATUS_COLORS[task.status] ?? "#4361EE";
+  return (
+    <div
+      className="truncate text-[9.5px] font-medium px-1.5 py-[2px] rounded-[4px] mb-[2px]"
+      style={{ background: color + "25", color, border: `1px solid ${color}35` }}
+      title={task.title}
+    >
+      {task.title}
+    </div>
+  );
+}
+
+export function CalendarioPage() {
+  const { tasks, setActivePage } = useAppStore();
+
+  const today = new Date();
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth());
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+
+  function prevMonth() {
+    if (month === 0) { setMonth(11); setYear((y) => y - 1); }
+    else setMonth((m) => m - 1);
+    setSelectedDay(null);
+  }
+
+  function nextMonth() {
+    if (month === 11) { setMonth(0); setYear((y) => y + 1); }
+    else setMonth((m) => m + 1);
+    setSelectedDay(null);
+  }
+
+  const { days, startOffset } = useMemo(() => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstWeekday = new Date(year, month, 1).getDay();
+    return { days: daysInMonth, startOffset: firstWeekday };
+  }, [year, month]);
+
+  // Map day → tasks due on that day
+  const tasksByDay = useMemo(() => {
+    const map: Record<number, Task[]> = {};
+    tasks.forEach((t) => {
+      if (!t.dueDate) return;
+      const d = new Date(t.dueDate + "T00:00:00");
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        const day = d.getDate();
+        if (!map[day]) map[day] = [];
+        map[day].push(t);
+      }
+    });
+    return map;
+  }, [tasks, year, month]);
+
+  const selectedTasks = selectedDay ? (tasksByDay[selectedDay] ?? []) : [];
+
+  const totalCells = startOffset + days;
+  const rows = Math.ceil(totalCells / 7);
+
+  return (
+    <div className="h-full overflow-auto px-6 pt-6 pb-6 flex flex-col gap-5">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between shrink-0"
+      >
+        <div>
+          <p className="text-[11px] text-[#2E2E3A] mb-1 tracking-wider uppercase font-medium">
+            Workspace / Calendário
+          </p>
+          <div className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-[10px] flex items-center justify-center"
+              style={{ background: "rgba(67,97,238,0.1)", border: "1px solid rgba(67,97,238,0.2)" }}
+            >
+              <Calendar size={18} color="#4361EE" />
+            </div>
+            <h1 className="text-[22px] font-bold text-[#EDEDED] tracking-[-0.03em]">
+              Calendário
+            </h1>
+          </div>
+        </div>
+
+        {/* Month navigation */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={prevMonth}
+            className="w-8 h-8 flex items-center justify-center rounded-[8px] text-[#5A5A70] hover:text-[#ADADB8] hover:bg-white/[0.04] transition-all"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span className="text-[15px] font-semibold text-[#DEDEE8] min-w-[160px] text-center">
+            {MONTH_NAMES[month]} {year}
+          </span>
+          <button
+            onClick={nextMonth}
+            className="w-8 h-8 flex items-center justify-center rounded-[8px] text-[#5A5A70] hover:text-[#ADADB8] hover:bg-white/[0.04] transition-all"
+          >
+            <ChevronRight size={16} />
+          </button>
+          <button
+            onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth()); setSelectedDay(today.getDate()); }}
+            className="ml-2 px-3 py-1.5 rounded-[7px] text-[11.5px] font-semibold text-[#4361EE] transition-all hover:bg-[#4361EE]/10"
+            style={{ border: "1px solid rgba(67,97,238,0.2)" }}
+          >
+            Hoje
+          </button>
+        </div>
+      </motion.div>
+
+      <div className="flex gap-4 flex-1 min-h-0">
+        {/* Calendar grid */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex-1 flex flex-col min-h-0 rounded-[14px] overflow-hidden"
+          style={{ border: "1px solid rgba(255,255,255,0.055)", background: "#14141A" }}
+        >
+          {/* Weekday headers */}
+          <div className="grid grid-cols-7 shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            {WEEKDAYS.map((wd) => (
+              <div
+                key={wd}
+                className="py-2.5 text-center text-[10.5px] font-semibold uppercase tracking-wider"
+                style={{ color: "#3A3A50" }}
+              >
+                {wd}
+              </div>
+            ))}
+          </div>
+
+          {/* Day cells */}
+          <div className="grid grid-cols-7 flex-1" style={{ gridTemplateRows: `repeat(${rows}, 1fr)` }}>
+            {Array.from({ length: rows * 7 }, (_, cellIdx) => {
+              const dayNum = cellIdx - startOffset + 1;
+              const isCurrentMonth = dayNum >= 1 && dayNum <= days;
+              const isToday =
+                isCurrentMonth &&
+                year === today.getFullYear() &&
+                month === today.getMonth() &&
+                dayNum === today.getDate();
+              const isSelected = isCurrentMonth && dayNum === selectedDay;
+              const dayTasks = isCurrentMonth ? (tasksByDay[dayNum] ?? []) : [];
+
+              return (
+                <div
+                  key={cellIdx}
+                  onClick={() => isCurrentMonth && setSelectedDay(dayNum === selectedDay ? null : dayNum)}
+                  className="p-1.5 transition-all"
+                  style={{
+                    borderRight: (cellIdx + 1) % 7 === 0 ? "none" : "1px solid rgba(255,255,255,0.03)",
+                    borderBottom: cellIdx < (rows - 1) * 7 ? "1px solid rgba(255,255,255,0.03)" : "none",
+                    background: isSelected
+                      ? "rgba(67,97,238,0.08)"
+                      : isCurrentMonth ? "transparent" : "rgba(0,0,0,0.15)",
+                    cursor: isCurrentMonth ? "pointer" : "default",
+                  }}
+                >
+                  {isCurrentMonth && (
+                    <>
+                      <div className="flex justify-end mb-1">
+                        <span
+                          className="w-[22px] h-[22px] flex items-center justify-center rounded-full text-[11px] font-semibold"
+                          style={{
+                            background: isToday ? "#4361EE" : "transparent",
+                            color: isToday ? "#fff" : isSelected ? "#4361EE" : "#6A6A80",
+                          }}
+                        >
+                          {dayNum}
+                        </span>
+                      </div>
+                      {dayTasks.slice(0, 3).map((t) => (
+                        <TaskPill key={t.id} task={t} />
+                      ))}
+                      {dayTasks.length > 3 && (
+                        <div className="text-[9px] text-[#4A4A60] font-medium pl-1">
+                          +{dayTasks.length - 3} mais
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* Side panel — selected day tasks */}
+        <AnimatePresence>
+          {selectedDay && (
+            <motion.div
+              key="day-panel"
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 12 }}
+              className="w-[240px] shrink-0 rounded-[14px] flex flex-col"
+              style={{
+                background: "#14141A",
+                border: "1px solid rgba(255,255,255,0.055)",
+              }}
+            >
+              <div
+                className="px-4 pt-4 pb-3 shrink-0"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <p className="text-[11px] text-[#3A3A50] font-medium mb-0.5">
+                  {WEEKDAYS[new Date(year, month, selectedDay).getDay()]}
+                </p>
+                <p className="text-[18px] font-bold text-[#EDEDED]">
+                  {selectedDay} de {MONTH_NAMES[month]}
+                </p>
+                <p className="text-[11px] text-[#3A3A50] mt-0.5">
+                  {selectedTasks.length} {selectedTasks.length === 1 ? "tarefa" : "tarefas"}
+                </p>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                {selectedTasks.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-2 mt-8">
+                    <span className="text-2xl">🗓️</span>
+                    <p className="text-[11.5px] text-[#3A3A48] text-center">
+                      Sem tasks para este dia
+                    </p>
+                  </div>
+                ) : (
+                  selectedTasks.map((task) => {
+                    const pConfig = getPriorityConfig(task.priority);
+                    const color = STATUS_COLORS[task.status] ?? "#4361EE";
+                    return (
+                      <div
+                        key={task.id}
+                        className="rounded-[9px] p-3 transition-all hover:brightness-110 cursor-pointer"
+                        style={{
+                          background: "#1A1A22",
+                          border: "1px solid rgba(255,255,255,0.05)",
+                        }}
+                        onClick={() => setActivePage("tasks")}
+                      >
+                        <div className="flex items-start gap-2 mb-1.5">
+                          <span
+                            className="w-[5px] h-[5px] rounded-full shrink-0 mt-1"
+                            style={{ background: pConfig.dotColor }}
+                          />
+                          <p className="text-[11.5px] font-medium text-[#CACAD8] leading-tight">
+                            {task.title}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1.5 pl-3">
+                          <span
+                            className="text-[9.5px] px-1.5 py-[2px] rounded-[4px] font-semibold"
+                            style={{ background: color + "20", color }}
+                          >
+                            {task.status === "todo" ? "A fazer" :
+                             task.status === "in_progress" ? "Em andamento" :
+                             task.status === "review" ? "Revisão" : "Concluído"}
+                          </span>
+                          <span
+                            className="text-[9.5px] px-1.5 py-[2px] rounded-[4px] font-semibold"
+                            style={{ background: pConfig.bgColor, color: pConfig.textColor }}
+                          >
+                            {pConfig.label}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Stats bar */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.15 }}
+        className="flex items-center gap-4 shrink-0"
+      >
+        {[
+          { label: "Total tasks no mês", value: Object.values(tasksByDay).flat().length, color: "#4361EE" },
+          { label: "Concluídas", value: Object.values(tasksByDay).flat().filter((t) => t.status === "done").length, color: "#22C55E" },
+          { label: "Em andamento", value: Object.values(tasksByDay).flat().filter((t) => t.status === "in_progress").length, color: "#4361EE" },
+          { label: "Atrasadas", value: Object.values(tasksByDay).flat().filter((t) => {
+            const due = new Date(t.dueDate + "T00:00:00");
+            return due < today && t.status !== "done";
+          }).length, color: "#EF4444" },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="flex items-center gap-2 px-3 py-2 rounded-[9px]"
+            style={{ background: "#14141A", border: "1px solid rgba(255,255,255,0.04)" }}
+          >
+            <span className="text-[18px] font-bold" style={{ color: s.color }}>{s.value}</span>
+            <span className="text-[11px] text-[#3A3A4A]">{s.label}</span>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}

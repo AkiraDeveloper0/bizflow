@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Calendar, BarChart3, Settings, HelpCircle } from "lucide-react";
+import { BarChart3, HelpCircle } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { DashboardPage } from "./pages/DashboardPage";
 import { EmpresasPage } from "./pages/EmpresasPage";
@@ -12,6 +12,9 @@ import { BuscarPage } from "./pages/BuscarPage";
 import { AIPage } from "./pages/AIPage";
 import { TemplatesPage } from "./pages/TemplatesPage";
 import { NotificacoesPage } from "./pages/NotificacoesPage";
+import { EmpresaDetailPage } from "./pages/EmpresaDetailPage";
+import { CalendarioPage } from "./pages/CalendarioPage";
+import { ConfiguracoesPage } from "./pages/ConfiguracoesPage";
 
 export function MainContent() {
   const { activePage } = useAppStore();
@@ -35,17 +38,10 @@ export function MainContent() {
         return <TemplatesPage key="templates" />;
       case "notificacoes":
         return <NotificacoesPage key="notificacoes" />;
+      case "empresa-detail":
+        return <EmpresaDetailPage key="empresa-detail" />;
       case "calendario":
-        return (
-          <PlaceholderPage
-            key="calendario"
-            title="Calendário"
-            description="Visualize seus compromissos e prazos"
-            icon={Calendar}
-            color="#4361EE"
-            breadcrumb="Workspace / Calendário"
-          />
-        );
+        return <CalendarioPage key="calendario" />;
       case "relatorios":
         return (
           <PlaceholderPage
@@ -58,16 +54,7 @@ export function MainContent() {
           />
         );
       case "configuracoes":
-        return (
-          <PlaceholderPage
-            key="configuracoes"
-            title="Configurações"
-            description="Gerencie preferências e integrações"
-            icon={Settings}
-            color="#6B7280"
-            breadcrumb="Workspace / Configurações"
-          />
-        );
+        return <ConfiguracoesPage key="configuracoes" />;
       case "ajuda":
         return (
           <PlaceholderPage
