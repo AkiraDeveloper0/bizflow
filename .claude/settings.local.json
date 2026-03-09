@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(command -v npm)",
+      "Bash(where npm)",
+      "Bash(/c/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js install)",
+      "Bash(/c/nvm4w/nodejs/node_modules/npm/bin/npm-cli.js install @excalidraw/excalidraw)",
+      "Bash(gh auth status)",
+      "Bash(where gh)"
+    ]
+  }
+}
