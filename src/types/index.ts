@@ -114,6 +114,42 @@ export interface FaturamentoEntry {
   descricao: string;
 }
 
+// ─── Clientes / CRM Types ────────────────────────────────────────────────────
+
+export type ClienteStatus =
+  | "lead"
+  | "contato_feito"
+  | "proposta_enviada"
+  | "negociacao"
+  | "ativo"
+  | "perdido";
+
+export type ClienteTipo = "lead" | "prospect" | "cliente" | "parceiro";
+
+export type InteracaoTipo = "ligacao" | "reuniao" | "email" | "mensagem";
+
+export interface Interacao {
+  id: string;
+  tipo: InteracaoTipo;
+  data: string; // "YYYY-MM-DD"
+  anotacao: string;
+}
+
+export interface Cliente {
+  id: string;
+  nome: string;
+  tipo: ClienteTipo;
+  responsavel: string;
+  telefone: string;
+  email: string;
+  website: string;
+  valorPotencial: number;
+  status: ClienteStatus;
+  observacoes: string;
+  ultimoContato: string; // "YYYY-MM-DD"
+  interacoes: Interacao[];
+}
+
 export interface EmpresaExtra {
   website: string;
   cnpj: string;
@@ -123,6 +159,7 @@ export interface EmpresaExtra {
   logins: EmpresaLogin[];
   ideias: Ideia[];
   faturamento: FaturamentoEntry[];
+  clientes: Cliente[];
 }
 
 // ─── Calendário Event Types ───────────────────────────────────────────────────

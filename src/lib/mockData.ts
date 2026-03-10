@@ -1,4 +1,4 @@
-import { Member, Task, Project, Empresa, EmpresaExtra } from "@/types";
+import { Member, Task, Project, Empresa, EmpresaExtra, Cliente } from "@/types";
 
 export const DEFAULT_EMPRESAS_DATA: Record<string, EmpresaExtra> = {
   e1: {
@@ -26,6 +26,57 @@ export const DEFAULT_EMPRESAS_DATA: Record<string, EmpresaExtra> = {
       { id: "f2", month: "2025-02", receita: 52000, despesas: 31000, descricao: "Fevereiro — Novos clientes" },
       { id: "f3", month: "2025-03", receita: 58000, despesas: 33000, descricao: "Março — Crescimento acelerado" },
     ],
+    clientes: [
+      {
+        id: "c1", nome: "Banco Digital Alfa", tipo: "cliente", responsavel: "Rafael Costa",
+        telefone: "(11) 9 1111-2222", email: "contato@bancoalfa.com.br", website: "https://bancoalfa.com.br",
+        valorPotencial: 120000, status: "ativo", observacoes: "Contrato anual renovado. Interesse em novos módulos.",
+        ultimoContato: "2025-02-28",
+        interacoes: [
+          { id: "i1", tipo: "reuniao", data: "2025-02-28", anotacao: "Reunião de revisão do contrato anual. Cliente satisfeito com o produto." },
+          { id: "i2", tipo: "email", data: "2025-02-20", anotacao: "Enviado proposta de módulo de analytics avançado." },
+        ],
+      },
+      {
+        id: "c2", nome: "FinTech Pago Rápido", tipo: "prospect", responsavel: "Ana Lima",
+        telefone: "(11) 9 3333-4444", email: "hello@pagorapido.com", website: "https://pagorapido.com",
+        valorPotencial: 85000, status: "negociacao", observacoes: "Interesse em white-label. Aguardando aprovação do board.",
+        ultimoContato: "2025-03-05",
+        interacoes: [
+          { id: "i1", tipo: "ligacao", data: "2025-03-05", anotacao: "Call com o CEO. Validaram o roadmap. Decisão em 2 semanas." },
+          { id: "i2", tipo: "reuniao", data: "2025-02-15", anotacao: "Demo do produto para equipe técnica. Feedback muito positivo." },
+        ],
+      },
+      {
+        id: "c3", nome: "Cooperativa Crédito Sul", tipo: "lead", responsavel: "Lucas Souza",
+        telefone: "(51) 9 5555-6666", email: "ti@creditosul.coop.br", website: "",
+        valorPotencial: 45000, status: "proposta_enviada", observacoes: "Proposta enviada em março. Aguardando retorno.",
+        ultimoContato: "2025-03-01",
+        interacoes: [
+          { id: "i1", tipo: "email", data: "2025-03-01", anotacao: "Proposta comercial enviada por e-mail." },
+        ],
+      },
+      {
+        id: "c4", nome: "Startup PayOff", tipo: "lead", responsavel: "Rafael Costa",
+        telefone: "(21) 9 7777-8888", email: "founders@payoff.io", website: "https://payoff.io",
+        valorPotencial: 30000, status: "contato_feito", observacoes: "Primeiro contato feito via LinkedIn.",
+        ultimoContato: "2025-02-25",
+        interacoes: [
+          { id: "i1", tipo: "mensagem", data: "2025-02-25", anotacao: "Contato inicial via LinkedIn. Interesse demonstrado no produto." },
+        ],
+      },
+      {
+        id: "c5", nome: "Banco Regional Norte", tipo: "parceiro", responsavel: "Mariana Reis",
+        telefone: "(92) 9 9000-0001", email: "parceria@brnorte.com.br", website: "https://brnorte.com.br",
+        valorPotencial: 200000, status: "ativo", observacoes: "Parceiro estratégico para distribuição da plataforma na região Norte.",
+        ultimoContato: "2025-03-08",
+        interacoes: [
+          { id: "i1", tipo: "reuniao", data: "2025-03-08", anotacao: "Reunião de alinhamento trimestral. Definição de metas de distribuição." },
+          { id: "i2", tipo: "ligacao", data: "2025-02-10", anotacao: "Alinhamento sobre cláusulas do contrato de parceria." },
+          { id: "i3", tipo: "email", data: "2025-01-20", anotacao: "Envio do contrato de parceria para análise jurídica." },
+        ],
+      },
+    ] as Cliente[],
   },
   e2: {
     website: "https://brandstudio.design",
@@ -45,6 +96,7 @@ export const DEFAULT_EMPRESAS_DATA: Record<string, EmpresaExtra> = {
       { id: "f1", month: "2025-01", receita: 32000, despesas: 18000, descricao: "Janeiro" },
       { id: "f2", month: "2025-02", receita: 38000, despesas: 21000, descricao: "Fevereiro" },
     ],
+    clientes: [],
   },
   e3: {
     website: "https://financeflow.com.br",
@@ -58,6 +110,7 @@ export const DEFAULT_EMPRESAS_DATA: Record<string, EmpresaExtra> = {
       { id: "f1", month: "2025-01", receita: 120000, despesas: 75000, descricao: "Janeiro — Gestão de carteiras" },
       { id: "f2", month: "2025-02", receita: 135000, despesas: 82000, descricao: "Fevereiro" },
     ],
+    clientes: [],
   },
   e4: {
     website: "",
@@ -72,6 +125,7 @@ export const DEFAULT_EMPRESAS_DATA: Record<string, EmpresaExtra> = {
       { id: "i1", title: "Plataforma de aluguel inteligente", description: "IA para sugerir imóveis com base no perfil do usuário", votes: 8, createdAt: "2025-02-05", status: "aprovada" },
     ],
     faturamento: [],
+    clientes: [],
   },
 };
 

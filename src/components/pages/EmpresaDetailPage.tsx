@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { Nota, EmpresaLogin, Ideia, IdeiaStatus, FaturamentoEntry, EmpresaExtra } from "@/types";
+import { ClientesTab } from "@/components/pages/ClientesTab";
 
 // ─── Shared Helpers ──────────────────────────────────────────────────────────
 
@@ -773,7 +774,7 @@ function FaturamentoTab({ empresaId }: { empresaId: string }) {
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
-type TabId = "informacoes" | "notas" | "logins" | "ideias" | "faturamento";
+type TabId = "informacoes" | "notas" | "logins" | "ideias" | "faturamento" | "clientes";
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: "informacoes", label: "Informações", icon: <Building2 size={13} /> },
@@ -781,6 +782,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: "logins", label: "Logins", icon: <Key size={13} /> },
   { id: "ideias", label: "Ideias", icon: <Lightbulb size={13} /> },
   { id: "faturamento", label: "Faturamento", icon: <TrendingUp size={13} /> },
+  { id: "clientes", label: "Clientes", icon: <User size={13} /> },
 ];
 
 export function EmpresaDetailPage() {
@@ -799,6 +801,7 @@ export function EmpresaDetailPage() {
     logins: extra?.logins?.length || 0,
     ideias: extra?.ideias?.length || 0,
     faturamento: extra?.faturamento?.length || 0,
+    clientes: extra?.clientes?.length || 0,
   };
 
   const STATUS_LABELS = {
@@ -879,15 +882,17 @@ export function EmpresaDetailPage() {
       </div>
 
       {/* ─── Tab Content ─── */}
-      <div className="flex-1 overflow-auto px-7 py-6">
+      <div className={`flex-1 min-h-0 px-7 py-6 ${activeTab === "clientes" ? "overflow-hidden flex flex-col" : "overflow-auto"}`}>
         <AnimatePresence mode="wait">
           <motion.div key={activeTab} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>
+            exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
+            className={activeTab === "clientes" ? "flex-1 min-h-0 overflow-hidden flex flex-col" : undefined}>
             {activeTab === "informacoes" && <InfoTab empresaId={empresa.id} />}
             {activeTab === "notas" && <NotasTab empresaId={empresa.id} />}
             {activeTab === "logins" && <LoginsTab empresaId={empresa.id} />}
             {activeTab === "ideias" && <IdeiasTab empresaId={empresa.id} />}
             {activeTab === "faturamento" && <FaturamentoTab empresaId={empresa.id} />}
+            {activeTab === "clientes" && <ClientesTab empresaId={empresa.id} />}
           </motion.div>
         </AnimatePresence>
       </div>

@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 import {
   Task, Project, Empresa, TaskStatus, ViewMode, Priority, Area,
   Nota, EmpresaLogin, Ideia, FaturamentoEntry, EmpresaExtra,
-  CalendarioEvent,
+  CalendarioEvent, Cliente, ClienteStatus, Interacao,
 } from "@/types";
 import { TASKS, PROJECTS, EMPRESAS, DEFAULT_EMPRESAS_DATA } from "./mockData";
 
@@ -65,6 +65,12 @@ interface AppState {
   addFaturamento: (empresaId: string, entry: FaturamentoEntry) => void;
   removeFaturamento: (empresaId: string, entryId: string) => void;
 
+  // Actions — Clientes (CRM)
+  addCliente: (empresaId: string, cliente: Cliente) => void;
+  removeCliente: (empresaId: string, clienteId: string) => void;
+  moveCliente: (empresaId: string, clienteId: string, newStatus: ClienteStatus) => void;
+  addInteracao: (empresaId: string, clienteId: string, interacao: Interacao) => void;
+
   // Actions — Calendário Events
   addCalendarioEvent: (event: CalendarioEvent) => void;
   removeCalendarioEvent: (id: string) => void;
@@ -76,7 +82,7 @@ const DEFAULT_FILTERS: TaskFilters = { priorities: [], categories: [] };
 const getEmpresaExtra = (state: AppState, empresaId: string): EmpresaExtra =>
   state.empresasData[empresaId] ?? {
     website: "", cnpj: "", telefone: "", endereco: "",
-    notas: [], logins: [], ideias: [], faturamento: [],
+    notas: [], logins: [], ideias: [], faturamento: [], clientes: [],
   };
 
 export const useAppStore = create<AppState>()(
@@ -242,6 +248,65 @@ export const useAppStore = create<AppState>()(
               [empresaId]: {
                 ...extra,
                 faturamento: extra.faturamento.filter((f) => f.id !== entryId),
+              },
+            },
+          };
+        }),
+
+      addCliente: (empresaId, cliente) =>
+        set((state) => {
+          const extra = getEmpresaExtra(state, empresaId);
+          return {
+            empresasData: {
+              ...state.empresasData,
+              [empresaId]: { ...extra, clientes: [...(extra.clientes ?? []), cliente] },
+            },
+          };
+        }),
+
+      removeCliente: (empresaId, clienteId) =>
+        set((state) => {
+          const extra = getEmpresaExtra(state, empresaId);
+          return {
+            empresasData: {
+              ...state.empresasData,
+              [empresaId]: {
+                ...extra,
+                clientes: (extra.clientes ?? []).filter((c) => c.id !== clienteId),
+              },
+            },
+          };
+        }),
+
+      moveCliente: (empresaId, clienteId, newStatus) =>
+        set((state) => {
+          const extra = getEmpresaExtra(state, empresaId);
+          return {
+            empresasData: {
+              ...state.empresasData,
+              [empresaId]: {
+                ...extra,
+                clientes: (extra.clientes ?? []).map((c) =>
+                  c.id === clienteId ? { ...c, status: newStatus } : c
+                ),
+              },
+            },
+          };
+        }),
+
+      addInteracao: (empresaId, clienteId, interacao) =>
+        set((state) => {
+          const extra = getEmpresaExtra(state, empresaId);
+          return {
+            empresasData: {
+              ...state.empresasData,
+              [empresaId]: {
+                ...extra,
+                clientes: (extra.clientes ?? []).map((c) =>
+                  c.id === clienteId
+                    ? { ...c, interacoes: [...c.interacoes, interacao] }
+                    : c
+                ),
               },
             },
           };
