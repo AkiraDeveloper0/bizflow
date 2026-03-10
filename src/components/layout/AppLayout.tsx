@@ -12,17 +12,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Global event notification popup — always mounted */}
       <EventNotificationManager />
 
-      <div
-        className="min-h-screen w-full flex items-center justify-center p-4 md:p-6"
-        style={{ background: "#060608" }}
-      >
+      <div className="h-screen w-full flex">
         {/* Main App Container */}
         <div
-          className="w-full max-w-[1440px] h-[calc(100vh-48px)] min-h-[600px] flex rounded-[20px] overflow-hidden"
-          style={{
-            background: "#0A0A0D",
-            boxShadow: "0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.055)",
-          }}
+          className="w-full h-full flex overflow-hidden"
+          style={{ background: "#0A0A0D" }}
         >
           {/* Sidebar */}
           <Sidebar />
