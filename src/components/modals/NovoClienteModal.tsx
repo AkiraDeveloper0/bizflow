@@ -5,7 +5,6 @@ import { X, Users, Check } from "lucide-react";
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { ClienteStatus, ClienteTipo } from "@/types";
-import { MEMBERS } from "@/lib/mockData";
 
 interface NovoClienteModalProps {
   empresaId: string;
@@ -71,11 +70,11 @@ function StyledInput({
 }
 
 export function NovoClienteModal({ empresaId, onClose }: NovoClienteModalProps) {
-  const { addCliente } = useAppStore();
+  const { addCliente, members } = useAppStore();
 
   const [nome, setNome] = useState("");
   const [tipo, setTipo] = useState<ClienteTipo>("lead");
-  const [responsavel, setResponsavel] = useState(MEMBERS[0].name);
+  const [responsavel, setResponsavel] = useState(members[0]?.name ?? "");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
@@ -216,7 +215,7 @@ export function NovoClienteModal({ empresaId, onClose }: NovoClienteModalProps) 
                 className="w-full px-3 py-2.5 rounded-[9px] text-[12.5px] text-[#DEDEE8] appearance-none cursor-pointer"
                 style={{ background: "#0C0C14", border: "1px solid rgba(255,255,255,0.07)", outline: "none" }}
               >
-                {MEMBERS.map((m) => (
+                {members.map((m) => (
                   <option key={m.id} value={m.name} style={{ background: "#111118" }}>
                     {m.name}
                   </option>

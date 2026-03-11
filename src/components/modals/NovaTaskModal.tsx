@@ -5,7 +5,6 @@ import { X, Plus, Check } from "lucide-react";
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { Priority, TaskStatus, Area } from "@/types";
-import { MEMBERS } from "@/lib/mockData";
 
 interface NovaTaskModalProps {
   onClose: () => void;
@@ -55,7 +54,7 @@ function inputStyle(focused: boolean = false): React.CSSProperties {
 }
 
 export function NovaTaskModal({ onClose }: NovaTaskModalProps) {
-  const { addTask, projects } = useAppStore();
+  const { addTask, projects, members } = useAppStore();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -96,7 +95,7 @@ export function NovaTaskModal({ onClose }: NovaTaskModalProps) {
       daysLeft,
       progress: 0,
       progressTotal: 10,
-      members: MEMBERS.filter((m) => selectedMembers.includes(m.id)),
+      members: members.filter((m) => selectedMembers.includes(m.id)),
       createdAt: new Date().toISOString().split("T")[0],
       dueDate: dueDate || new Date().toISOString().split("T")[0],
       tags: [],
@@ -299,7 +298,7 @@ export function NovaTaskModal({ onClose }: NovaTaskModalProps) {
             <div>
               <InputLabel>Responsáveis</InputLabel>
               <div className="flex gap-2 flex-wrap">
-                {MEMBERS.map((m) => {
+                {members.map((m) => {
                   const isSelected = selectedMembers.includes(m.id);
                   return (
                     <button

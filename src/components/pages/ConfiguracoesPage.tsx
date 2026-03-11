@@ -16,15 +16,22 @@ import {
   Sun,
   Shield,
   Trash2,
+  Users,
+  Plus,
+  X,
+  Pencil,
+  Database,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-type Section = "perfil" | "workspace" | "aparencia" | "notificacoes" | "integracoes";
+type Section = "perfil" | "workspace" | "aparencia" | "notificacoes" | "integracoes" | "equipe" | "dados";
 
 const SECTIONS: { id: Section; label: string; icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
   { id: "perfil", label: "Perfil", icon: User },
   { id: "workspace", label: "Workspace", icon: Building2 },
+  { id: "equipe", label: "Equipe", icon: Users },
+  { id: "dados", label: "Dados", icon: Database },
   { id: "aparencia", label: "Aparência", icon: Palette },
   { id: "notificacoes", label: "Notificações", icon: Bell },
   { id: "integracoes", label: "Integrações", icon: Plug },
@@ -434,6 +441,259 @@ function IntegracoesSection() {
   );
 }
 
+const PRESET_COLORS = ["#4361EE","#7C3AED","#059669","#DB2777","#D97706","#0EA5E9"];
+
+function EquipeSection() {
+  const { members, addMember, removeMember, updateMember } = useAppStore();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [showAdd, setShowAdd] = useState(false);
+
+  // Form state for new / edit
+  const [formName, setFormName] = useState("");
+  const [formColor, setFormColor] = useState(PRESET_COLORS[0]);
+  const [formInitials, setFormInitials] = useState("");
+
+  function openAdd() {
+    setFormName("");
+    setFormColor(PRESET_COLORS[0]);
+    setFormInitials("");
+    setShowAdd(true);
+    setEditingId(null);
+  }
+
+  function openEdit(m: { id: string; name: string; color: string; initials: string }) {
+    setFormName(m.name);
+    setFormColor(m.color);
+    setFormInitials(m.initials);
+    setEditingId(m.id);
+    setShowAdd(false);
+  }
+
+  function cancelForm() {
+    setShowAdd(false);
+    setEditingId(null);
+  }
+
+  function submitAdd() {
+    if (!formName.trim()) return;
+    const name = formName.trim();
+    const initials = formInitials.trim() || name.split(" ").filter(Boolean).slice(0,2).map(w => w[0].toUpperCase()).join("");
+    addMember({ id: `m${Date.now()}`, name, avatar: "", color: formColor, initials });
+    setShowAdd(false);
+  }
+
+  function submitEdit() {
+    if (!editingId || !formName.trim()) return;
+    const name = formName.trim();
+    const initials = formInitials.trim() || name.split(" ").filter(Boolean).slice(0,2).map(w => w[0].toUpperCase()).join("");
+    updateMember(editingId, { name, color: formColor, initials });
+    setEditingId(null);
+  }
+
+  const inputStyle = {
+    background: "#0C0C14",
+    border: "1px solid rgba(255,255,255,0.07)",
+    outline: "none",
+    color: "#DEDEE8",
+    borderRadius: "8px",
+    fontSize: "13px",
+    padding: "8px 12px",
+    width: "100%",
+    transition: "border-color 0.15s",
+  } as React.CSSProperties;
+
+  function MemberForm({ onSave, onCancel }: { onSave: () => void; onCancel: () => void }) {
+    return (
+      <div className="p-4 space-y-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-[11px] font-medium text-[#5A5A70] mb-1.5">Nome *</label>
+            <input
+              value={formName}
+              onChange={(e) => {
+                setFormName(e.target.value);
+                if (!formInitials) {
+                  const parts = e.target.value.trim().split(" ").filter(Boolean);
+                  setFormInitials(parts.slice(0,2).map(w => w[0].toUpperCase()).join(""));
+                }
+              }}
+              placeholder="Ex: João Silva"
+              autoFocus
+              style={inputStyle}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(67,97,238,0.45)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)")}
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-[#5A5A70] mb-1.5">Iniciais</label>
+            <input
+              value={formInitials}
+              onChange={(e) => setFormInitials(e.target.value.toUpperCase().slice(0,2))}
+              placeholder="Ex: JS"
+              maxLength={2}
+              style={inputStyle}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(67,97,238,0.45)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)")}
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-[11px] font-medium text-[#5A5A70] mb-1.5">Cor</label>
+          <div className="flex items-center gap-2">
+            {PRESET_COLORS.map((c) => (
+              <button
+                key={c}
+                onClick={() => setFormColor(c)}
+                className="w-7 h-7 rounded-full transition-transform hover:scale-110 relative flex items-center justify-center"
+                style={{ background: c, boxShadow: `0 2px 8px ${c}50` }}
+              >
+                {formColor === c && <Check size={11} color="white" strokeWidth={3} />}
+              </button>
+            ))}
+            <label
+              className="w-7 h-7 rounded-full cursor-pointer flex items-center justify-center text-[10px] text-white font-bold relative overflow-hidden hover:scale-110 transition-transform"
+              style={{ background: "conic-gradient(#EF4444,#F97316,#EAB308,#22C55E,#4361EE,#7C3AED,#EF4444)", border: "2px solid rgba(255,255,255,0.15)" }}
+            >
+              <input type="color" value={formColor} onChange={(e) => setFormColor(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+              +
+            </label>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 pt-1">
+          <button
+            onClick={onSave}
+            disabled={!formName.trim()}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-[8px] text-[12px] font-semibold text-white transition-all hover:brightness-110 disabled:opacity-40"
+            style={{ background: "linear-gradient(135deg, #4361EE 0%, #7C3AED 100%)" }}
+          >
+            <Check size={12} /> Salvar
+          </button>
+          <button onClick={onCancel} className="px-3 py-1.5 rounded-[8px] text-[12px] font-medium text-[#5A5A68] hover:text-[#9A9AA8] hover:bg-white/[0.04] transition-all">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <SectionCard title="Membros da equipe">
+        {members.map((m) => (
+          <div key={m.id}>
+            {editingId === m.id ? (
+              <MemberForm onSave={submitEdit} onCancel={cancelForm} />
+            ) : (
+              <div
+                className="flex items-center gap-3 px-4 py-3"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+              >
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white shrink-0"
+                  style={{ background: m.color }}
+                >
+                  {m.initials}
+                </div>
+                <p className="flex-1 text-[13px] font-medium text-[#CACAD8]">{m.name}</p>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => openEdit(m)}
+                    className="w-7 h-7 flex items-center justify-center rounded-[6px] text-[#4A4A60] hover:text-[#ADADB8] hover:bg-white/[0.06] transition-all"
+                  >
+                    <Pencil size={13} />
+                  </button>
+                  <button
+                    onClick={() => removeMember(m.id)}
+                    className="w-7 h-7 flex items-center justify-center rounded-[6px] text-[#4A4A60] hover:text-[#F87171] hover:bg-red-500/[0.08] transition-all"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        {showAdd && <MemberForm onSave={submitAdd} onCancel={cancelForm} />}
+        <div className="p-3">
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-2 px-3 py-2 rounded-[8px] text-[12px] font-semibold transition-all hover:brightness-110 w-full justify-center"
+            style={{ background: "rgba(67,97,238,0.08)", color: "#4361EE", border: "1px dashed rgba(67,97,238,0.25)" }}
+          >
+            <Plus size={13} /> Adicionar membro
+          </button>
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
+
+function DadosSection() {
+  const { segmentos, addSegmento, removeSegmento } = useAppStore();
+  const [newSeg, setNewSeg] = useState("");
+  const [focused, setFocused] = useState(false);
+
+  function handleAdd() {
+    const v = newSeg.trim();
+    if (!v) return;
+    addSegmento(v);
+    setNewSeg("");
+  }
+
+  return (
+    <div>
+      <SectionCard title="Segmentos de empresa">
+        <div className="p-4 space-y-3">
+          <p className="text-[11.5px] text-[#3A3A50]">
+            Segmentos disponíveis ao cadastrar uma empresa.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {segmentos.map((s) => (
+              <div
+                key={s}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium"
+                style={{ background: "#1A1A26", border: "1px solid rgba(255,255,255,0.08)", color: "#ADADC0" }}
+              >
+                {s}
+                <button
+                  onClick={() => removeSegmento(s)}
+                  className="text-[#4A4A60] hover:text-[#F87171] transition-colors ml-0.5"
+                >
+                  <X size={11} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              value={newSeg}
+              onChange={(e) => setNewSeg(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              placeholder="Novo segmento..."
+              className="flex-1 px-3 py-2 rounded-[8px] text-[13px] text-[#DEDEE8] placeholder-[#2E2E3A] outline-none"
+              style={{
+                background: "#0C0C14",
+                border: focused ? "1px solid rgba(67,97,238,0.45)" : "1px solid rgba(255,255,255,0.07)",
+                transition: "border-color 0.15s",
+              }}
+            />
+            <button
+              onClick={handleAdd}
+              disabled={!newSeg.trim()}
+              className="px-3 py-2 rounded-[8px] text-[12px] font-semibold text-white transition-all hover:brightness-110 disabled:opacity-40"
+              style={{ background: "linear-gradient(135deg, #4361EE 0%, #7C3AED 100%)" }}
+            >
+              <Plus size={14} />
+            </button>
+          </div>
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
+
 export function ConfiguracoesPage() {
   const [activeSection, setActiveSection] = useState<Section>("perfil");
 
@@ -441,6 +701,8 @@ export function ConfiguracoesPage() {
     switch (activeSection) {
       case "perfil": return <PerfilSection />;
       case "workspace": return <WorkspaceSection />;
+      case "equipe": return <EquipeSection />;
+      case "dados": return <DadosSection />;
       case "aparencia": return <AparenciaSection />;
       case "notificacoes": return <NotificacoesSection />;
       case "integracoes": return <IntegracoesSection />;

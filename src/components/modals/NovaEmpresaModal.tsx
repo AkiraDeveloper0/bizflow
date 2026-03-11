@@ -5,7 +5,6 @@ import { X, Building2, Check } from "lucide-react";
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { EmpresaStatus } from "@/types";
-import { MEMBERS } from "@/lib/mockData";
 
 interface NovaEmpresaModalProps {
   onClose: () => void;
@@ -26,18 +25,6 @@ const PRESET_COLORS = [
   "#0EA5E9",
 ];
 
-const SEGMENTS = [
-  "Tecnologia",
-  "Marketing",
-  "Financeiro",
-  "Imobiliário",
-  "Saúde",
-  "Educação",
-  "Varejo",
-  "Logística",
-  "Jurídico",
-  "Consultoria",
-];
 
 function InputLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -48,7 +35,7 @@ function InputLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function NovaEmpresaModal({ onClose }: NovaEmpresaModalProps) {
-  const { addEmpresa } = useAppStore();
+  const { addEmpresa, members, segmentos } = useAppStore();
 
   const [name, setName] = useState("");
   const [segment, setSegment] = useState("Tecnologia");
@@ -56,7 +43,7 @@ export function NovaEmpresaModal({ onClose }: NovaEmpresaModalProps) {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<EmpresaStatus>("ativa");
   const [color, setColor] = useState(PRESET_COLORS[0]);
-  const [responsibleId, setResponsibleId] = useState(MEMBERS[0].id);
+  const [responsibleId, setResponsibleId] = useState(members[0]?.id ?? "");
   const [nameFocused, setNameFocused] = useState(false);
   const [descFocused, setDescFocused] = useState(false);
 
@@ -69,7 +56,7 @@ export function NovaEmpresaModal({ onClose }: NovaEmpresaModalProps) {
 
   const handleSubmit = () => {
     if (!name.trim()) return;
-    const responsible = MEMBERS.find((m) => m.id === responsibleId) || MEMBERS[0];
+    const responsible = members.find((m) => m.id === responsibleId) || members[0];
     addEmpresa({
       id: `e${Date.now()}`,
       name: name.trim(),
@@ -176,7 +163,7 @@ export function NovaEmpresaModal({ onClose }: NovaEmpresaModalProps) {
                     outline: "none",
                   }}
                 >
-                  {SEGMENTS.map((s) => (
+                  {segmentos.map((s) => (
                     <option key={s} value={s} style={{ background: "#111118" }}>
                       {s}
                     </option>
@@ -195,7 +182,7 @@ export function NovaEmpresaModal({ onClose }: NovaEmpresaModalProps) {
                     outline: "none",
                   }}
                 >
-                  {MEMBERS.map((m) => (
+                  {members.map((m) => (
                     <option key={m.id} value={m.id} style={{ background: "#111118" }}>
                       {m.name}
                     </option>

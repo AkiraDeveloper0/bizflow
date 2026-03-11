@@ -5,9 +5,9 @@ import { persist } from "zustand/middleware";
 import {
   Task, Project, Empresa, TaskStatus, ViewMode, Priority, Area,
   Nota, EmpresaLogin, Ideia, FaturamentoEntry, EmpresaExtra,
-  CalendarioEvent, Cliente, ClienteStatus, Interacao,
+  CalendarioEvent, Cliente, ClienteStatus, Interacao, Member,
 } from "@/types";
-import { TASKS, PROJECTS, EMPRESAS, DEFAULT_EMPRESAS_DATA } from "./mockData";
+import { TASKS, PROJECTS, EMPRESAS, DEFAULT_EMPRESAS_DATA, MEMBERS } from "./mockData";
 
 interface TaskFilters {
   priorities: Priority[];
@@ -21,6 +21,8 @@ interface AppState {
   empresas: Empresa[];
   empresasData: Record<string, EmpresaExtra>;
   calendarioEvents: CalendarioEvent[];
+  members: Member[];
+  segmentos: string[];
 
   // UI State
   activePage: string;
@@ -71,6 +73,13 @@ interface AppState {
   moveCliente: (empresaId: string, clienteId: string, newStatus: ClienteStatus) => void;
   addInteracao: (empresaId: string, clienteId: string, interacao: Interacao) => void;
 
+  // Actions — Members & Segmentos
+  addMember: (member: Member) => void;
+  removeMember: (memberId: string) => void;
+  updateMember: (memberId: string, updates: Partial<Member>) => void;
+  addSegmento: (nome: string) => void;
+  removeSegmento: (nome: string) => void;
+
   // Actions — Calendário Events
   addCalendarioEvent: (event: CalendarioEvent) => void;
   removeCalendarioEvent: (id: string) => void;
@@ -93,6 +102,8 @@ export const useAppStore = create<AppState>()(
       empresas: EMPRESAS,
       empresasData: DEFAULT_EMPRESAS_DATA,
       calendarioEvents: [],
+      members: MEMBERS,
+      segmentos: ["Tecnologia","Marketing","Financeiro","Imobiliário","Saúde","Educação","Varejo","Logística","Jurídico","Consultoria"],
 
       activePage: "projetos",
       activeProjectId: "p1",
@@ -312,6 +323,25 @@ export const useAppStore = create<AppState>()(
           };
         }),
 
+      addMember: (member) =>
+        set((state) => ({ members: [...state.members, member] })),
+
+      removeMember: (memberId) =>
+        set((state) => ({ members: state.members.filter((m) => m.id !== memberId) })),
+
+      updateMember: (memberId, updates) =>
+        set((state) => ({
+          members: state.members.map((m) => (m.id === memberId ? { ...m, ...updates } : m)),
+        })),
+
+      addSegmento: (nome) =>
+        set((state) => ({
+          segmentos: state.segmentos.includes(nome) ? state.segmentos : [...state.segmentos, nome],
+        })),
+
+      removeSegmento: (nome) =>
+        set((state) => ({ segmentos: state.segmentos.filter((s) => s !== nome) })),
+
       addCalendarioEvent: (event) =>
         set((state) => ({ calendarioEvents: [...state.calendarioEvents, event] })),
 
@@ -337,6 +367,8 @@ export const useAppStore = create<AppState>()(
         empresasData: state.empresasData,
         calendarioEvents: state.calendarioEvents,
         shownEventNotifications: state.shownEventNotifications,
+        members: state.members,
+        segmentos: state.segmentos,
       }),
     }
   )
