@@ -76,12 +76,12 @@ function ClienteCard({
   return (
     <div
       ref={setNodeRef}
-      style={style}
       {...listeners}
       {...attributes}
       onClick={onOpen}
       className="rounded-[12px] p-3.5 cursor-pointer group transition-all hover:brightness-110"
       style={{
+        ...(style ?? {}),
         background: isDragging ? "#22222E" : "#18181F",
         border: "1px solid rgba(255,255,255,0.07)",
         boxShadow: isDragging ? "0 8px 30px rgba(0,0,0,0.5)" : "0 1px 4px rgba(0,0,0,0.3)",
@@ -501,7 +501,7 @@ function InfoRow({
   label,
   value,
 }: {
-  icon: React.ComponentType<{ size?: number; color?: string }>;
+  icon: React.ComponentType<{ size?: number; color?: string; className?: string }>;
   label: string;
   value: string;
 }) {
